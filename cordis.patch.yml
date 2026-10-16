@@ -1,0 +1,39 @@
+# dsh-tavily-search bundle patch（v3）
+#
+# 这个 patch 做三件事，第三件（本插件自己的行）通过 insert 新建：
+#   1) 插入本插件；
+#   2) 停用内置的 DeepSeek 原生搜索行 web-search-deepseek；
+#   3) 把 web seam 的 searchProvider 钉死为 tavily。
+#
+# 【规范依据】官方文档 docs/user/develop/basic/publish.zh.md：
+# bundle 的 patch 是「patch 条目数组」；layer 语义是「按 id 命中已有行走覆盖」，
+# 没有命中才需要 insert 新建。所以「停用 / 覆盖已有条目」必须是【顶层、按 id 的块】，
+# 绝不能放进 insert —— 放进 insert 会被当成「新建同 id 条目」，与官方 base 里已插入的
+# 同 id 条目冲突 → duplicate loader entry id → 整棵 plugin tree 加载失败（boot 崩）。
+# 这条正是本插件 v1 崩溃的根因，写在这里防止复发。
+#
+# 为什么必须「钉死 searchProvider + 停用内置」这一个组合：
+# 官方 web seam 的选择语义（本机 Inspect 实测）是
+#   - 配置了 id 且 provider 已注册且 available() → 用它；
+#   - 配置了 id 但未注册 → WEB_PROVIDER_CONFIGURED_MISSING；
+#   - 配置了 id 但 available() 为 false → WEB_PROVIDER_CONFIGURED_UNAVAILABLE（报错，不回落）；
+#   - 未配置 id 且有多个可用 provider → WEB_PROVIDER_AMBIGUOUS。
+# 本插件的开关走 provider 内部路由（关掉时复用官方 DeepSeekSearchProvider 兜底），
+# 所以运行时只有一个 provider 参与 seam 选择，不存在歧义。
+#
+# 想恢复内置搜索：把下面的 disabled 改成 false，并删掉 web 行的 searchProvider。
+
+- insert:
+    - id: dsh-tavily-search
+      name: 'dsh-tavily-search'
+
+# 停用内置搜索：它注册的 provider id 是 deepseek-official（官方包源码常量）。
+- id: web-search-deepseek
+  disabled: true
+
+# 钉死搜索 provider。注意 layer 是整体替换 config，不是深度合并，
+# 因此必须重述该行原有的每个键（fetchProvider）。
+- id: web
+  config:
+    searchProvider: tavily
+    fetchProvider: http

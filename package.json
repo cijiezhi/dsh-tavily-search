@@ -1,0 +1,61 @@
+{
+  "name": "dsh-tavily-search",
+  "version": "3.0.0",
+  "description": "把 DSH 的 web_search 换成 Tavily：官方席位面板（开关、API Key、搜索精度、连通性测试、额度查询）＋「答案 + 来源链接」免模型直搜；关掉 Tavily 自动退回 DeepSeek 兜底。",
+  "type": "module",
+  "license": "MIT",
+  "author": "cijiezhi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cijiezhi/dsh-tavily-search.git"
+  },
+  "homepage": "https://github.com/cijiezhi/dsh-tavily-search#readme",
+  "bugs": {
+    "url": "https://github.com/cijiezhi/dsh-tavily-search/issues"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "NOTICE.md",
+    "INSTALL.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "docs"
+  ],
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "tavily",
+    "web-search",
+    "search-provider",
+    "sidebar-panel"
+  ],
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.1.5-rc.1"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node dev-notes/test/selftest.mjs && node dev-notes/test/client-test.mjs",
+    "test:host": "node dev-notes/test/selftest.mjs",
+    "test:client": "node dev-notes/test/client-test.mjs"
+  },
+  "engines": {
+    "node": ">=22.19"
+  }
+}

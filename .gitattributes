@@ -1,0 +1,10 @@
+# 统一换行：仓库内一律 LF，检出到 Windows 时再按类型处理。
+# 这样 clone 到任何平台都不会因为 CRLF 产生「整文件 diff」。
+* text=auto eol=lf
+
+# 纯文本声明（本包没有二进制资源）
+*.js text
+*.mjs text
+*.json text
+*.yml text
+*.md text
